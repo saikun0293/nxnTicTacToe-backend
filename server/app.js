@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const uniqueValidator = require("mongoose-unique-validator");
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -141,6 +141,10 @@ app.put("/:team/:id", function (req, response) {
     });
   }
 });
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+}
 
 app.listen(PORT, function () {
   console.log("Server is running on port " + PORT);
