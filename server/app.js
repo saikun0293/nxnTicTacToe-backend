@@ -4,16 +4,19 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const uniqueValidator = require("mongoose-unique-validator");
-const { default: apiKey } = require("../client/src/components/APIKEY");
 const PORT = 4000;
 
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect("mongodb://localhost:27017/playersDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(
+  "mongodb+srv://admin-saiteja:7PEfa.rqBi65PZs@cluster0.nqcml.mongodb.net/playersDB?retryWrites=true&w=majority",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  }
+);
 
 mongoose.connection.once("open", function () {
   console.log("MongoDB database connection established successfully!");
@@ -34,7 +37,7 @@ const playersSchema = new mongoose.Schema({
   total_matches: Number,
   scores: Array,
 });
-playersSchema.plugin();
+playersSchema.plugin(uniqueValidator);
 
 const Red = mongoose.model("RedPlayer", playersSchema);
 const Blue = mongoose.model("BluePlayer", playersSchema);
@@ -49,6 +52,7 @@ app.get("/:team", function (req, response) {
         response.send(res);
       }
     });
+  } else if (team === "blue") {
     Blue.find(function (err, res) {
       if (err) {
         response.send(err);
